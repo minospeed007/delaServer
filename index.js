@@ -33,7 +33,8 @@ app.use(cors({
     credentials: true,
     origin: [
         "exp://192.168.43.159:8081",
-        "http://192.168.43.159:8081"
+        "http://192.168.43.159:8081",
+        "https://vast-rose-jackrabbit-kit.cyclic.app:443"
     ],
     methods: ["GET", "POST", "DELETE", "PUT"],
 }));
