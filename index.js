@@ -1,13 +1,13 @@
-import express from 'express'
-import dotenv from 'dotenv'
-import cookieParser from 'cookie-parser'
-import cors from 'cors'
-import mongoose from 'mongoose'
-import authRoute from './routes/auth.js'
-import usersRoute from './routes/users.js'
-import hotelsRoute from './routes/hotels.js'
-import roomsRoute from './routes/rooms.js'
-import transactionRoute from './routes/transactions.js'
+import express from 'express';
+import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import mongoose from 'mongoose';
+import authRoute from './routes/auth.js';
+import usersRoute from './routes/users.js';
+import hotelsRoute from './routes/hotels.js';
+import roomsRoute from './routes/rooms.js';
+import transactionRoute from './routes/transactions.js';
 
 const app = express();
 dotenv.config();
@@ -34,7 +34,7 @@ app.use(cors({
     origin: [
         "exp://192.168.43.159:8081",
         "http://192.168.43.159:8081",
-        "https://vast-rose-jackrabbit-kit.cyclic.app:443"
+        "https://delaserver.onrender.com:443"
     ],
     methods: ["GET", "POST", "DELETE", "PUT"],
 }));
@@ -60,6 +60,21 @@ app.use((err, req, res, next) => {
         stack: err.stack,
     });
 });
+
+// Implementing warm-up mechanism
+const warmUp = async () => {
+    try {
+        // Make a lightweight request to the server
+        //await axios.get('https://vast-rose-jackrabbit-kit.cyclic.app:443/warm-up');
+        console.log('Warm-up request successful');
+    } catch (error) {
+        console.error('Warm-up request failed:', error);
+    }
+};
+
+// Schedule the warm-up task to run every 30 minutes
+const interval = 30 * 60 * 1000; // 30 minutes in milliseconds
+setInterval(warmUp, interval);
 
 // Call the connect function to start the server
 connect();
