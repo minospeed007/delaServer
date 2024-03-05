@@ -20,6 +20,10 @@ const UserSchema = new mongoose.Schema({
         required: true,
         unique:true
     },
+    createdBy: {
+        type: String,
+        required: true
+    },
     totalContributedAmount: {
         type: Number,
         default: 0  
@@ -37,6 +41,11 @@ const DepositSchema = new mongoose.Schema({
         ref: 'User', 
         required: true
     },
+    createdBy: {
+        type: String,
+        required: true
+    },
+
     date: {
         type: Date,
         required: true
@@ -72,6 +81,10 @@ const WithdrawalSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User', 
+        required: true
+    },
+    createdBy: {
+        type: String,
         required: true
     },
     date: {
@@ -113,6 +126,10 @@ const TransactionSchema = new mongoose.Schema({
     },
     amount: {
         type: Number,
+        required: true
+    },
+    createdBy: {
+        type: String,
         required: true
     },
     date: {

@@ -2,11 +2,11 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import axios from 'axios';
 import mongoose from 'mongoose';
 import authRoute from './routes/auth.js';
 import usersRoute from './routes/users.js';
-import hotelsRoute from './routes/hotels.js';
-import roomsRoute from './routes/rooms.js';
+
 import transactionRoute from './routes/transactions.js';
 
 const app = express();
@@ -45,8 +45,6 @@ app.options('*', cors());
 
 app.use("/api/auth", authRoute);
 app.use("/api/users", usersRoute);
-app.use("/api/hotels", hotelsRoute);
-app.use("/api/rooms", roomsRoute);
 app.use("/api/transactions", transactionRoute);
 
 app.use((err, req, res, next) => {
@@ -65,7 +63,7 @@ app.use((err, req, res, next) => {
 const warmUp = async () => {
     try {
         // Make a lightweight request to the server
-        //await axios.get('https://vast-rose-jackrabbit-kit.cyclic.app:443/warm-up');
+    await axios.get('https://delaserver.onrender.com:443/api/users');
         console.log('Warm-up request successful');
     } catch (error) {
         console.error('Warm-up request failed:', error);

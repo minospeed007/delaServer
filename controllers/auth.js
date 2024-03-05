@@ -1,10 +1,9 @@
 import {User} from '../models/Users.js';
 import Admin from '../models/Admin.js'
-
 import {createError} from '../utils/error.js'
 import jwt from 'jsonwebtoken'
-
 import bcrypt from "bcryptjs"
+
 export const register= async (req,res,next)=>{
     try{
       const salt=bcrypt.genSaltSync(10)
@@ -40,22 +39,34 @@ next(err)
     }
 }
 // Admin login
+export const AdminLogin = async (req, res, next) => {
+  try {
+    const admin = await Admin.findOne({ username: req.body.username });
+    if (!admin) return next(createError(404, "No user found"));
 
-export const AdminLogin= async(req,res,next)=>{
-  try{
-const admin= await Admin.findOne({username:req.body.username})
-if(!admin) return next(createError(404, "No user  found"));
-const isPasswordCorrect= await bcrypt.compare(req.body.password, admin.password)
-if(!isPasswordCorrect) return next(createError(400, "Wrong password or username"));
-const token= jwt.sign({id:admin._id, isAdmin: admin.isAdmin}, "#@%itsx#$%trong")
+    const isPasswordCorrect = await bcrypt.compare(req.body.password, admin.password);
+    if (!isPasswordCorrect) return next(createError(400, "Wrong password or username"));
 
-const {password, isAdmin, ...otherDetails}=admin._doc
-res.cookie("access_token",token,{
-  httpOnly:true
-}).status(200).json({details:{...otherDetails},isAdmin})
+    const token = jwt.sign({
+      id: admin._id,
+      isAdmin: admin.isAdmin,
+      username: admin.username 
+    }, "#@%itsx#$%trong");
 
-  }catch(err){
-    next(err)
+    // Exclude sensitive details from the response
+    const { password, isAdmin, ...otherDetails } = admin._doc;
+
+    // Send the token as a cookie to the client
+    res.cookie("access_token", token, {
+      httpOnly: true
+    }).status(200).json({
+      details: { ...otherDetails, username: admin.username }, 
+      isAdmin
+    });
+    
+    console.log('hello login');
+  } catch (err) {
+    next(err);
   }
 }
 
