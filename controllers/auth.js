@@ -23,6 +23,14 @@ next(err)
 }
 export const registerAdmin= async (req,res,next)=>{
     try{
+      // check for existing email in the database
+    const adminEmail= await Admin.findOne({ email: req.body.email });
+
+    // check for existing username
+    const adminUsername = await Admin.findOne({ username: req.body.username });
+    if (adminUsername ) return  res.status(404).json({ message: 'Username already exist !' })
+
+    // if there is noe existing email and username
       const salt=bcrypt.genSaltSync(10)
       const hash=bcrypt.hashSync(req.body.password,salt)
   const newUser= new Admin({
@@ -33,10 +41,14 @@ export const registerAdmin= async (req,res,next)=>{
   })
   await newUser.save()
   res.status(200).send(newUser)
-  console.log("Admin created!")
-    }catch(err){
-next(err)
-    }
+  console.log("Admin created!",newUser);
+    }catch(error){
+      if (error.code === 11000) {
+        return res.status(400).json({ message: 'Email already exists !' });
+    } else {
+        // Handle other types of errors
+        return res.status(500).json({ error: 'An error occurred' });
+    }    }
 }
 // Admin login
 export const AdminLogin = async (req, res, next) => {

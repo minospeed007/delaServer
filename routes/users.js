@@ -21,9 +21,9 @@ router.post("/checkAdmin/:id",verifyAdmin,(req,res,next)=>{
 //create user route
 router.post("/user", register);
 // Update route
-router.put("/:id",verifyUser,updateUser)
+router.put("/:id",updateUser)
 // Delete Route
-router.delete("/:id",verifyAdmin, deleteUser)
+router.delete("/:id", deleteUser)
 
 //GET
 //router.get("/:id",verifyUser, getUser)

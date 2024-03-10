@@ -21,15 +21,31 @@ export const createCustomer = async (req, res, next) => {
             const username = decodedToken.username;
 
             try {
-                // Check if the Id or phone number already exist in the database
-                const existingCustomer = await User.findOne({ $or: [{ Id }, { phone }] });
-
-                if (existingCustomer) {
-                    // If Id or phone number already exists, send an error message
-                    return res.status(400).json({ message: 'Id or phone number already exists' });
+                if (!Id || !phone) {
+                    return res.status(400).json({ message: 'Id and phone are required fields' });
+                }
+                // check the length of phone number
+                if (phone.length !== 10) {
+                    return res.status(400).json({ message: 'Phone number must be 10 digits long' });
+                }
+                // Check if a user with the same ID already exists for the admin
+                const existingId = await User.findOne({ Id, createdBy: username });
+                if (existingId) {
+                    return res.status(400).json({ message: 'User with the same ID already exists' });
                 }
 
-                // If Id and phone number are unique, create the new customer
+                // Check if a user with the same phone already exists for the admin
+                const existingPhone = await User.findOne({ phone, createdBy: username });
+                
+                if (existingPhone ) {
+
+                    return res.status(400).json({ message: 'User with the same phone number already exists' });
+  
+                }else{
+console.log('success');
+                }
+
+                // If the ID and phone are unique, create the new customer
                 const newCustomer = new User({
                     ...req.body,
                     createdBy: username
@@ -37,35 +53,49 @@ export const createCustomer = async (req, res, next) => {
                 const savedCustomer = await newCustomer.save();
 
                 res.status(200).json(savedCustomer);
-                console.log(savedCustomer)
+                
             } catch (error) {
-                // Handle any database or other errors here
-                return res.status(500).json({ error: 'An error occurred while creating the customer' });
+                if (error.code === 11000) {
+                    console.error("Duplicate key error:", error);
+                    return res.status(400).json({ error: 'User with the same number already exists!' });
+                } else {
+                    // Handle other types of errors
+                    console.error("An error occurred:", error);
+                    return res.status(500).json({ error: 'An error occurred' });
+                }
+              
             }
         });
     } catch (err) {
+        console.error("An error occurred:", err);
         next(err);
     }
 };
+export const updateUser = async (req, res, next) => {
+    try {
+        const updatedUser = await User.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
+        if (!updatedUser) {
+            return res.status(404).json({ error: "User not found" }); 
+        }
+        res.status(200).json(updatedUser);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal server error" }); 
+    }
+};
 
-export const updateUser= async (req,res,next)=>{
-    try{
-        const updatedUser= await User.findByIdAndUpdate(req.params.id, {$set:req.body},
-            {new:true}) 
-        res.status(200).json(updatedUser)
-        }catch(err){
-            next(err)
+export const deleteUser = async (req, res, next) => {
+    try {
+        const deletedUser = await User.findByIdAndDelete(req.params.id);
+        if (!deletedUser) {
+            return res.status(404).json({ error: "User not found" }); 
         }
-}
-export const deleteUser= async (req,res,next)=>{
-    try{
-        await User.findByIdAndUpdate(req.params.id) 
-        res.status(200).json("User has been deleted!")
-        console.log("User has been deleted!")
-        }catch(err){
-            next(err)
-        }
-}
+        res.status(200).json("User has been deleted!");
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal server error" }); 
+    }
+};
 
 export const getUser = async (req, res, next) => {
     try {
@@ -123,3 +153,4 @@ export const getUsers = async (req, res, next) => {
         next(err);
     }
 };
+

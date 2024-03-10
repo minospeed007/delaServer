@@ -32,8 +32,8 @@ mongoose.connection.on("disconnected", () => {
 app.use(cors({
     credentials: true,
     origin: [
-        "exp://192.168.43.159:8081",
-        "http://192.168.43.159:8081",
+      //  "exp://192.168.43.159:8081",
+        //"http://192.168.43.159:8081",
         "https://delaserver.onrender.com:443"
     ],
     methods: ["GET", "POST", "DELETE", "PUT"],
@@ -72,7 +72,7 @@ const warmUp = async () => {
 
 // Schedule the warm-up task to run every 30 minutes
 const interval = 30 * 60 * 1000; // 30 minutes in milliseconds
-setInterval(warmUp, interval);
+//setInterval(warmUp, interval);
 
 // Call the connect function to start the server
 connect();

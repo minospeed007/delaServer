@@ -47,7 +47,7 @@ export const withdraw = async (req, res, next) => {
                     LastName: LastName,
                     phone: phone,
                     description: description,
-                    createdBy: username
+                    createdBy: username,
                 });
 
                 // Save the withdrawal document to the database
@@ -62,20 +62,22 @@ export const withdraw = async (req, res, next) => {
                     FirstName: FirstName,
                     LastName: LastName,
                     phone: phone,
-                    createdBy: username
+                    createdBy:username,
                 });
                 await newTransaction.save();
 
                 // Send the updated totalContributedAmount along with the saved withdrawal
-                res.status(200).json({
+                return res.status(200).json({
                     withdrawal: savedWithdrawal,
                     balance: user.totalContributedAmount
                 });
             } catch (error) {
+                console.error('Withdrawal error:', error);
                 return res.status(500).json({ error: 'Internal server error' });
             }
         });
     } catch (error) {
+        console.error('Token verification error:', error);
         next(error);
     }
 };

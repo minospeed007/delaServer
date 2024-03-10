@@ -24,7 +24,7 @@ export const deposit = async (req, res, next) => {
                 const user = await User.findOne({ Id: userId });
 
                 if (!user) {
-                    return res.status(404).json({ error: 'User not found' });
+                    return res.status(404).json({ message: 'User not found' });
                 }
 
                 // Parse the amount to a number to ensure proper addition
@@ -58,7 +58,7 @@ export const deposit = async (req, res, next) => {
                     FirstName: FirstName,
                     LastName: LastName,
                     phone: phone,
-                    createdBy: username, 
+                    createdBy:username, 
                 });
                 await newTransaction.save();
 
